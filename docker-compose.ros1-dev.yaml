@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+
+  ros-core:
+    image: ros:noetic-ros-core
+    container_name: ros-core
+    tty: true
+    stdin_open: true
+    environment:
+      - ROS_MASTER_URI=http://ros-core:11311
+    command: roscore
+
+  ros1-dev:
+    build:
+      context: .
+      dockerfile: ./docker/ros1-dev.dockerfile
+    container_name: ros1-dev
+    restart: always
+    stdin_open: true
+    tty: true
+    environment:
+      - ROS_MASTER_URI=http://ros-core:11311
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/catkin_ws/src
+    command: sleep infinity

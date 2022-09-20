@@ -21,7 +21,7 @@ services:
     tty: true
     environment:
       - ROS_MASTER_URI=http://ros-core:11311
-      - DISPLAY
+      - DISPLAY=$DISPLAY
       - QT_X11_NO_MITSHM=1
     devices:
       - /dev/dri:/dev/dri

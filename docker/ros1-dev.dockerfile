@@ -7,6 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # update system image and install dependencies
 RUN apt-get update && apt upgrade -y
 RUN apt-get install -y \
+
+    
     software-properties-common \
     wget \
     git \
@@ -19,6 +21,26 @@ RUN apt-get install -y \
 # create workspace
 RUN mkdir -p /catkin_ws/src
 WORKDIR /catkin_ws
+
+# Get gazebo binaries
+RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list \
+ && wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add - \
+ && apt-get update \
+ && apt-get install -y \
+    gazebo11 \
+    ros-noetic-gazebo-ros-pkgs \
+    ros-noetic-fake-localization \
+    ros-noetic-joy \
+ && apt-get clean
+
+# git clone and rosdep
+RUN git -C src clone \
+      --branch noetic \
+      https://bitbucket.org/theconstructcore/bb8 
+RUN apt-get update
+RUN rosdep install --from-paths src --ignore-src -r -y 
+RUN rm -rf /var/lib/apt/lists/*
+
 
 # compile packages
 RUN catkin config --extend /opt/ros/$ROS_DISTRO \
